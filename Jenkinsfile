@@ -21,7 +21,7 @@ archiveArtifacts 'target/*.jar'
 stage('documentation'){
 steps {
 bat './mvnw javadoc:javadoc'
-archiveArtifacts 'target/site/'
+archiveArtifacts 'target/site/*/*'
 }
 }
 }
