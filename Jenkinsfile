@@ -6,21 +6,15 @@ pipeline{
                 bat './mvnw clean'
             }
         }
-        stage('test'){
+         stage('test'){
             steps {
                 bat './mvnw test'
-                junit 'target/surefire-reports/*.xml'
+                junit 'target/surefire-reports *//*.xml'
             }
-        }
-        stage('documentation'){
+        } 
+        /* stage('documentation'){
             steps {
                 bat './mvnw javadoc:javadoc'
-                /* bat '''
-                mkdir -p documentationcp -r
-                target/site *//*
-                zip -r doc.zip doc
-                '''
-                archiveArtifacts artifacts : 'doc.zip' */
                 publishHTML ([
                  allowMissing: false,
                  alwaysLinkToLastBuild: true,
@@ -30,7 +24,7 @@ pipeline{
                  reportName: 'Documentation'
                  ])
             }
-        }
+        } */
         stage('build'){
             steps {
                 bat './mvnw package'
