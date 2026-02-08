@@ -26,7 +26,7 @@ mkdir -p documentationcp -r
 target/site/*
 zip -r doc.zip doc
 '''
-archiveArtifacts artificats : 'doc.zip'
+archiveArtifacts artifacts : 'doc.zip'
 }
 }
 }
