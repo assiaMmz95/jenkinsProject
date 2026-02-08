@@ -37,26 +37,25 @@ stage('build'){
         archiveArtifacts 'target/*.jar'
     }
     post{
-    always{
-        emailext(subject: "Build réussi:",
-                body:"Le build a réussi."
-                to: "rina.ra.1804@gmail.com"
-                )
-        }
-    failure{
-        emailext(subject: "Build echec:",
-                body:"Le build a réussi."
-                to: "rina.ra.1804@gmail.com"
-                )
-        }
-    }
-    success{
+        /* always{
             emailext(subject: "Build réussi:",
                     body:"Le build a réussi."
                     to: "rina.ra.1804@gmail.com"
                     )
-            }
+            } */
+        failure{
+            emailext(subject: "Build echec:",
+                    body:"Le build a réussi.",
+                    to: "rina.ra.1804@gmail.com"
+                    )
         }
+        success{
+                emailext(subject: "Build réussi:",
+                        body:"Le build a réussi.",
+                        to: "rina.ra.1804@gmail.com"
+                        )
+        }
+    }
 }
 
 }
