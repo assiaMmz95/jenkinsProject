@@ -3,7 +3,7 @@ agent any
 stages{
 stage('build'){
 steps {
-bat './mvnw install'
+bat './mvnw clean package'
 }
 }
 }
