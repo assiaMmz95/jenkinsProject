@@ -1,14 +1,20 @@
 pipeline{
 agent any
 stages{
+stage('init'){
+steps {
+bat './mvnw clean'
+}
+}
 stage('test'){
 steps {
+bat './mvnw test'
 junit 'target/surefire-reports/*.xml'
 }
 }
 stage('build'){
 steps {
-bat './mvnw clean package'
+bat './mvnw package'
 archiveArtifacts 'target/*.jar'
 }
 }
