@@ -43,18 +43,18 @@ pipeline{
                             to: "rina.ra.1804@gmail.com"
                             )
                     } */
-                failure{
-                    emailext(subject: "Build echec:",
+            failure{
+                    email(subject: "Build echec:",
                             body:"Le build a réussi.",
                             to: "rina.ra.1804@gmail.com"
                             )
-                }
-                success{
-                        emailext(subject: "Build réussi:",
+            }
+            success{
+                    email(subject: "Build réussi:",
                                 body:"Le build a réussi.",
                                 to: "rina.ra.1804@gmail.com"
                                 )
-                }
+            }
            // }
         }
 
