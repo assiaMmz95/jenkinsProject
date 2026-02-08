@@ -21,12 +21,20 @@ archiveArtifacts 'target/*.jar'
 stage('documentation'){
 steps {
 bat './mvnw javadoc:javadoc'
-bat '''
+/* bat '''
 mkdir -p documentationcp -r
-target/site/*
+target/site *//*
 zip -r doc.zip doc
 '''
-archiveArtifacts artifacts : 'doc.zip'
+archiveArtifacts artifacts : 'doc.zip' */
+publishHTML ([
+ allowMissing: false,
+ alwaysLinkToLastBuild: true,
+ keepAll: true,
+ reportDir: 'target/site/apidocs',
+ reportFiles: 'index.html',
+ reportName: 'Documentation'
+ ])
 }
 }
 }
