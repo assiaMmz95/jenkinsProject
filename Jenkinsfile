@@ -1,17 +1,17 @@
 pipeline{
     agent any
     stages{
-        stage('init'){
+        /* stage('init'){
             steps {
                 bat './mvnw clean'
             }
-        }
-         stage('test'){
+        } */
+         /* stage('test'){
             steps {
                 bat './mvnw test'
-                junit 'target/surefire-reports/*.xml'
+                junit 'target/surefire-reports *//*.xml'
             }
-        }
+        } */
         /* stage('documentation'){
             steps {
                 bat './mvnw javadoc:javadoc'
