@@ -9,7 +9,7 @@ pipeline{
          stage('test'){
             steps {
                 bat './mvnw test'
-                junit 'target/surefire-reports *//*.xml'
+                junit 'target/surefire-reports/*.xml'
             }
         }
         /* stage('documentation'){
