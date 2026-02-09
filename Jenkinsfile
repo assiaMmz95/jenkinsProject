@@ -30,13 +30,13 @@ pipeline{
                 bat './mvnw package'
                 archiveArtifacts 'target/*.jar'
             }
-            post{
-                /* always{
+            /* post{
+                 *//* always{
                     emailext(subject: "Build réussi:",
                             body:"Le build a réussi."
                             to: "rina.ra.1804@gmail.com"
                             )
-                    } */
+                    } *//*
                 failure{
                         mail(subject: "Build echec:",
                                 body:"Le build a réussi.",
@@ -49,7 +49,7 @@ pipeline{
                                     to: "rina.ra.1804@gmail.com"
                                     )
                 }
-            }
+            } */
         }
         stage('deployement'){
               steps {
