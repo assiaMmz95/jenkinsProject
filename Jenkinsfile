@@ -6,25 +6,30 @@ pipeline{
                 bat './mvnw clean'
             }
         } */
-         /* stage('test'){
-            steps {
-                bat './mvnw test'
-                junit 'target/surefire-reports *//*.xml'
+        parallel{
+            stage("parallel"){
+                stage('test'){
+                            steps {
+                                bat './mvnw test'
+                                junit 'target/surefire-reports *//*.xml'
+                            }
+                        }
+                        stage('documentation'){
+                            steps {
+                                bat './mvnw javadoc:javadoc'
+                                publishHTML ([
+                                 allowMissing: false,
+                                 alwaysLinkToLastBuild: true,
+                                 keepAll: true,
+                                 reportDir: 'target/site/apidocs',
+                                 reportFiles: 'index.html',
+                                 reportName: 'Documentation'
+                                 ])
+                            }
+                        }
             }
-        } */
-        /* stage('documentation'){
-            steps {
-                bat './mvnw javadoc:javadoc'
-                publishHTML ([
-                 allowMissing: false,
-                 alwaysLinkToLastBuild: true,
-                 keepAll: true,
-                 reportDir: 'target/site/apidocs',
-                 reportFiles: 'index.html',
-                 reportName: 'Documentation'
-                 ])
-            }
-        } */
+        }
+
         stage('build'){
             steps {
                 bat './mvnw package'
