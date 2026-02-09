@@ -51,7 +51,10 @@ pipeline{
                 }
             } */
         }
-        stage('deployement'){
+        stage('deploy'){
+              when{
+                branch 'main'
+              }
               steps {
                   bat 'docker-compose up --build -d'
               }
