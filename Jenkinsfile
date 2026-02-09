@@ -11,7 +11,7 @@ pipeline{
                 bat './mvnw test'
                 junit 'target/surefire-reports *//*.xml'
             }
-        } 
+        }
         /* stage('documentation'){
             steps {
                 bat './mvnw javadoc:javadoc'
@@ -51,6 +51,10 @@ pipeline{
                 }
             }
         }
-
+        stage('deployement'){
+              steps {
+                   bat 'docker-compose up --build'
+              }
+        }
     }
 }
