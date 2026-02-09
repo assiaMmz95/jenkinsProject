@@ -6,8 +6,8 @@ pipeline{
                 bat './mvnw clean'
             }
         } */
-        parallel{
-            stage("parallel"){
+        stage("parallel"){
+            parallel{
                 stage('test'){
                             steps {
                                 bat './mvnw test'
