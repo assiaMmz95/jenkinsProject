@@ -1,11 +1,11 @@
 pipeline{
     agent any
     stages{
-        /* stage('init'){
+         stage('init'){
             steps {
                 bat './mvnw clean'
             }
-        } */
+        }
          /* stage('test'){
             steps {
                 bat './mvnw test'
@@ -25,11 +25,11 @@ pipeline{
                  ])
             }
         } */
-        stage('build'){
-            steps {
-                bat './mvnw package'
-                archiveArtifacts 'target/*.jar'
-            }
+        //stage('build'){
+       //     steps {
+        //        bat './mvnw package'
+        //        archiveArtifacts 'target/*.jar'
+        //    }
             /* post{
                  *//* always{
                     emailext(subject: "Build réussi:",
@@ -50,7 +50,7 @@ pipeline{
                                     )
                 }
             } */
-        }
+     //   }
         stage('deploy'){
               when{
                 branch 'main'
