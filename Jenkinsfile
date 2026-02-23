@@ -105,8 +105,6 @@ pipeline{
                 }
             }
         }
-        
-
        /* stage('Rollback') {
            when {
                expression { currentBuild.result == 'FAILURE' }
