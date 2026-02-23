@@ -38,72 +38,46 @@ pipeline {
         stage('Health Check') {
             steps {
                 echo "Checking Health..."
-                sleep time: 30, unit: 'SECONDS'  // Increased from 15 to 30 seconds
+                sleep time: 15, unit: 'SECONDS'
 
                 script {
-                    def maxRetries = 3
-                    def success = false
-                    
-                    for (int i = 1; i <= maxRetries; i++) {
-                        echo "Health check attempt ${i}/${maxRetries}"
-                        
-                        try {
-                            // Clean up previous files
-                            bat 'if exist response.json del response.json'
-                            bat 'if exist status.txt del status.txt'
-                            
-                            def result = bat(
-                                script: '''
-                                    @echo off
-                                    setlocal
-                                
-                                    curl -s -o response.json -w "%%{http_code}" http://localhost:8082/actuator/health > status.txt 2>nul
-                                
-                                    if errorlevel 1 (
-                                        echo 000 > status.txt
-                                    )
-                                
-                                    set /p code=<status.txt
-                                    echo %code%
-                                
-                                    exit /b 0
-                                ''',
-                                returnStdout: true
-                            ).trim()
 
-                            def httpCode = result[-3..-1]
-                            echo "HTTP Code: ${httpCode}"
+                    def httpCode = bat(script: '''
+                                        @echo off
+                                        setlocal
+                                
+                                        curl -s -o response.json -w "%%{http_code}" http://localhost:8082/actuator/health > status.txt 2>nul
+                                
+                                        if errorlevel 1 (
+                                            echo 000 > status.txt
+                                        )
+                                
+                                        set /p code=<status.txt
+                                        echo %code%
+                                
+                                        exit /b 0
+                                        ''',
+                            returnStdout: true).trim()
 
-                            if (httpCode == "200" && fileExists('response.json')) {
-                                def body = readFile('response.json')
-                                echo "Body: ${body}"
+                    echo "HTTP Code: ${httpCode}"
 
-                                if (body.contains('"status":"UP"')) {
-                                    echo "Application is healthy ✅"
-                                    success = true
-                                    break
-                                } else {
-                                    echo "Application returned non-UP status"
-                                }
-                            } else {
-                                echo "Application not reachable (HTTP: ${httpCode})"
-                            }
-                        } catch (Exception e) {
-                            echo "Error during health check: ${e.getMessage()}"
+                    if (httpCode == "200") {
+
+                        def body = readFile('response.json')
+                        echo "Body: ${body}"
+
+                        if (body.contains('"status":"UP"')) {
+                            echo "Application is healthy ✅"
+                        } else {
+                            error("Health endpoint returned non-UP status")
                         }
-                        
-                        if (i < maxRetries) {
-                            echo "Waiting 10 seconds before next attempt..."
-                            sleep time: 10, unit: 'SECONDS'
-                        }
+
+                    } else {
+                        currentBuild.result = "FAILURE"
+
+
                     }
-                    
-                    if (!success) {
-                        currentBuild.result = 'FAILURE'
-                        error "Health check failed after ${maxRetries} attempts"
-                    }
-                    
-                    echo "Final Result: ${currentBuild.result}"
+                    echo currentBuild.result
                 }
             }
         }
