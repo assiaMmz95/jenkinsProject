@@ -61,6 +61,7 @@ pipeline{
                   bat 'docker-compose up --build -d'
               }
         }
+        
         stage('Health Check') {
             steps {
                 echo "Checking Health..."
