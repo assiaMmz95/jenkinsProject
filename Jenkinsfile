@@ -123,46 +123,64 @@ pipeline{
             }
 
         stage('Rollback') {
-            when {
-                expression { currentBuild.result == "FAILURE" }
-            }
-            steps {
-                /*  def stableTag = sh(
-                         script: "git tag --sort=-creatordate | head -n 1",
-                         returnStdout: true
-                     ).trim()
-                 echo "pro stable ${stableTag}" */
-                echo "Starting rollback to tag: ${ROLLBACK_TAG}"
-                script {
-                   bat """
-                        git fetch origin --tags --force
-                        git checkout tags/${ROLLBACK_TAG} -b ${ROLLBACK_BRANCH}
-                    """
+    when {
+        expression { currentBuild.result == "FAILURE" }
+    }
+    steps {
+        script {
+            // Define rollback variables
+            def ROLLBACK_TAG = "v1.0.0" // Change this to your actual rollback tag
+            def ROLLBACK_BRANCH = "rollback-${ROLLBACK_TAG}-${BUILD_NUMBER}"
+            
+            echo "Starting rollback to tag: ${ROLLBACK_TAG}"
+            
+            bat """
+                git fetch origin --tags --force
+                git checkout tags/${ROLLBACK_TAG} -b ${ROLLBACK_BRANCH}
+            """
 
-                    echo "Rolled back to tag ${ROLLBACK_TAG} on new branch ${ROLLBACK_BRANCH}"
+            echo "Rolled back to tag ${ROLLBACK_TAG} on new branch ${ROLLBACK_BRANCH}"
 
+            // Clean and build
+            bat './mvnw clean'
+            bat './mvnw install'
 
-                    //sh './deploy.sh'
-                    bat './mvnw clean'
-                    bat './mvnw install'
+            // Stop and remove containers safely
+            bat 'docker-compose down --remove-orphans'
+            bat 'docker rm -f spring-boot-app || exit 0'
+            bat 'docker rm -f mysql-db || exit 0'
 
-                    // Stop and remove containers safely
-                    bat 'docker-compose down --remove-orphans'
-                    bat 'docker rm -f spring-boot-app || exit 0'
-                    bat 'docker rm -f mysql-db || exit 0'
+            // Rebuild and start
+            bat 'docker-compose up --build -d'
 
-                    // Rebuild and start
-                    bat 'docker-compose up --build -d'
-
-                    echo "Rollback deployment complete"
-
-
-
-
-                }
+            echo "Rollback deployment complete"
+            
+            // Add health check after rollback
+            sleep time: 30, unit: 'SECONDS'
+            
+            def healthCheck = bat(
+                script: 'curl -s -o response.json -w %%{http_code} http://localhost:8082/actuator/health',
+                returnStdout: true,
+                returnStatus: true
+            )
+            
+            if (healthCheck == 0) {
+                echo "Rollback successful - application is healthy"
+            } else {
+                error "Rollback failed - application health check failed"
             }
         }
+    }
+}
 
+post {
+    success {
+        echo 'Pipeline completed successfully ✅'
+    }
+    failure {
+        echo 'Pipeline failed ❌'
+    }
+}
      /*   stage('Rollback') {
            when {
                expression { currentBuild.result == 'FAILURE' }
