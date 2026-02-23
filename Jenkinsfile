@@ -105,7 +105,7 @@ pipeline{
                 }
             }
         }      
-       /* stage('Rollback') {
+        stage('Rollback') {
            when {
                expression { currentBuild.result == 'FAILURE' }
            }
@@ -119,7 +119,8 @@ pipeline{
                    echo "Rolled back to tag ${ROLLBACK_TAG} on new branch ${ROLLBACK_BRANCH}"
 
 
-                   //sh './deploy.sh'
+                   bat 'clean package'
+                   bat 'docker-compose up --build -d'
                    echo "Rollback deployment complete"
 
 
@@ -135,5 +136,5 @@ pipeline{
         }
 
 
-    }*/
+    }
 }
