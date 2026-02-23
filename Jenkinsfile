@@ -76,8 +76,21 @@ pipeline{
                 sleep time: 15, unit: 'SECONDS'
 
               script {
-                    def result = bat(
-                        script: 'curl -s -o response.json -w %%{http_code} http://localhost:8082/actuator/health',
+                    def result = bat(script: '''
+                                        @echo off
+                                        setlocal
+                                
+                                        curl -s -o response.json -w "%%{http_code}" http://localhost:8082/actuator/health > status.txt 2>nul
+                                
+                                        if errorlevel 1 (
+                                            echo 000 > status.txt
+                                        )
+                                
+                                        set /p code=<status.txt
+                                        echo %code%
+                                
+                                        exit /b 0
+                                        ''',
                         returnStdout: true
                     ).trim()
 
