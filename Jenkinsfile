@@ -61,35 +61,45 @@ pipeline{
                   bat 'docker-compose up --build -d'
               }
         }
-        
+
         stage('Health Check') {
-            steps {
-                echo "Checking Health..."
-                sleep time: 15, unit: 'SECONDS'
+    steps {
+        echo "Checking Health..."
+        sleep time: 10, unit: 'SECONDS'
 
-                script {
-                    def result = bat(
-                        script: 'curl -s -o response.json -w %%{http_code} http://localhost:8082/actuator/health',
-                        returnStdout: true
-                    ).trim()
+        script {
+            def result = bat(
+                script: '''
+                    @echo off
+                    curl -s --connect-timeout 5 --max-time 10 ^
+                         -o response.json ^
+                         -w "%%{http_code}" ^
+                         http://localhost:8082/actuator/health
+                    if errorlevel 1 echo 000
+                ''',
+                returnStdout: true
+            ).trim()
 
-                    def httpCode = result[-3..-1]
+            // Nettoyage : on garde uniquement les chiffres
+            def httpCode = result.replaceAll('[^0-9]', '')
 
-                    echo "HTTP Code: ${httpCode}"
+            echo "HTTP Code: ${httpCode}"
 
-                    if (httpCode == "200") {
-                        def body = readFile('response.json')
-                        if (body.contains('"status":"UP"')) {
-                            echo "Application is healthy ✅"
-                        } else {
-                            error("Health endpoint returned DOWN")
-                        }
-                    } else {
-                        error("Application not reachable (HTTP ${httpCode})")
-                    }
+            if (httpCode == "200") {
+                def body = readFile('response.json')
+                echo "Body: ${body}"
+
+                if (body.contains('"status":"UP"')) {
+                    echo "Application is healthy ✅"
+                } else {
+                    error("Application health is DOWN")
                 }
+            } else {
+                error("Application not reachable (HTTP ${httpCode})")
             }
         }
+    }
+}
 
     }
 }
