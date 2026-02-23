@@ -49,7 +49,7 @@ public class WebSecurityConfig {
                                 "/js/**",
                                 "/images/**",
                                 "/api/customer/**",
-                                "actuator/health"
+                                "/actuator/health"
                         ).permitAll()
                         .requestMatchers("order/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
