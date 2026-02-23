@@ -68,14 +68,14 @@ pipeline{
                 script {
 
                     def result = bat(
-                        '''
-                            @echo off
-                            curl -s --connect-timeout 5 --max-time 10 ^
-                                -o response.json ^
-                                -w "%%{http_code}" ^
-                                http://localhost:8082/actuator/health
-                            if errorlevel 1 echo 000
-                        ''',
+                    '''
+                        @echo off
+                        curl -s --connect-timeout 5 --max-time 10 ^
+                            -o response.json ^
+                            -w "%%{http_code}" ^
+                            http://localhost:8082/actuator/health
+                        if errorlevel 1 echo 000
+                    ''',
                         returnStdout: true
                     ).trim()
 
