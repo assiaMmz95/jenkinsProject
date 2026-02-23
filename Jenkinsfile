@@ -25,11 +25,11 @@ pipeline{
                  ])
             }
         } */
-        stage('build'){
+       /* stage('build'){
             steps {
                 bat './mvnw package'
                 archiveArtifacts 'target/*.jar'
-            }
+            }*/
             /* post{
                  *//* always{
                     emailext(subject: "Build réussi:",
@@ -50,7 +50,7 @@ pipeline{
                                     )
                 }
             } */
-        }
+       // }
         stage('deploy'){
               when{
                 branch 'main'
@@ -68,10 +68,14 @@ pipeline{
                 script {
 
                     def result = bat(
-                        script: """
+                        '''
                             @echo off
-                            curl -s -o response.json -w "%%{http_code}" http://localhost:8082/actuator/health || echo "000"
-                        """,
+                            curl -s --connect-timeout 5 --max-time 10 ^
+                                -o response.json ^
+                                -w "%%{http_code}" ^
+                                http://localhost:8082/actuator/health
+                            if errorlevel 1 echo 000
+                        ''',
                         returnStdout: true
                     ).trim()
 
